@@ -1,3 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using NotissimusTest.Data;
+using NotissimusTest.Repository;
+using NotissimusTest.Repository.Interface;
+using NotissimusTest.Service;
+using NotissimusTest.Service.Interface;
+
 namespace NotissimusTest
 {
     public class Program
@@ -6,16 +13,21 @@ namespace NotissimusTest
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            builder.Services.AddScoped<IMouseMovementService, MouseMovementService>();
+            builder.Services.AddScoped<IMouseMovementRepository, MouseMovementRepository>();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
